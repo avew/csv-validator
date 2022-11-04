@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -83,11 +84,13 @@ public abstract class CsvReader<T extends CsvValue> extends CsvUtil {
                 }
             }
 
-            result.setValidations(validations);
             result.setValues(values);
             result.setCount(values.size());
 
-            if (validations.size() > 0) result.setError(true);
+            if (validations.size() > 0) {
+                result.setError(true);
+                result.setValidations(validations.stream().sorted(Comparator.comparing(ValidationCsvDTO::getLine)).collect(Collectors.toList()));
+            }
         } catch (IOException | NoSuchMethodException | IllegalAccessException | InstantiationException |
                  InvocationTargetException ex) {
             ex.printStackTrace();

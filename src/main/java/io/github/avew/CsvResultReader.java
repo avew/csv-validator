@@ -3,9 +3,8 @@ package io.github.avew;
 import lombok.*;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -19,7 +18,7 @@ public class CsvResultReader<T extends CsvValue> {
     private List<T> values = new ArrayList<>();
 
     @Builder.Default
-    private Set<ValidationCsvDTO> validations = new HashSet<>();
+    private Collection<ValidationCsvDTO> validations = new ArrayList<>();
 
     @Builder.Default
     private boolean error = false;

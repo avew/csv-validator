@@ -28,4 +28,13 @@ public class ValidationCsvDTO {
 
     private String code;
 
+    @Override
+    public String toString() {
+        return "ValidationCsvDTO{" +
+                "line=" + line +
+                ", error=" + error +
+                ", message='" + message + '\'' +
+                ", code='" + code + '\'' +
+                '}';
+    }
 }

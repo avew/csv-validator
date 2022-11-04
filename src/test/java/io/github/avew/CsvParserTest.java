@@ -16,13 +16,25 @@ public class CsvParserTest extends CsvReader<CsvUserValueDTO> {
     };
 
     @Test
-    public void testRead() {
+    public void testReadSuccess() {
         InputStream is = this.getClass().getResourceAsStream("/csv/user.csv");
         CsvResultReader<CsvUserValueDTO> read = read(is);
         Assert.assertFalse(read.isError());
         if (!read.isError()) {
             read.getValues().forEach(csvUserValueDTO -> {
                 System.out.println(csvUserValueDTO.toString());
+            });
+        }
+    }
+
+    @Test
+    public void testReadFailed() {
+        InputStream is = this.getClass().getResourceAsStream("/csv/user-failed.csv");
+        CsvResultReader<CsvUserValueDTO> read = read(is);
+        Assert.assertTrue(read.isError());
+        if (read.isError()) {
+            read.getValidations().forEach(validationCsvDTO -> {
+                System.out.println(validationCsvDTO.toString());
             });
         }
     }

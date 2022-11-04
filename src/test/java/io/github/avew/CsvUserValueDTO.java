@@ -14,4 +14,13 @@ public class CsvUserValueDTO extends CsvValue {
     private String firstname;
     private String lastname;
 
+    @Override
+    public String toString() {
+        return "CsvUserValueDTO{" +
+                "username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                '}';
+    }
 }

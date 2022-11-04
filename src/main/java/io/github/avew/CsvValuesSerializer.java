@@ -1,13 +1,13 @@
 package io.github.avew;
 
-import java.util.Set;
+import java.util.Collection;
 
 @FunctionalInterface
 public interface CsvValuesSerializer<T extends CsvValue> {
 
     void apply(int line,
                String[] columns,
-               Set<ValidationCsvDTO> validations,
+               Collection<ValidationCsvDTO> validations,
                T value
     ) throws Exception;
 
