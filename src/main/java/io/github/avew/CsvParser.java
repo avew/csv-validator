@@ -30,7 +30,7 @@ public class CsvParser extends CsvParserUtil {
                             int col,
                             Object o,
                             boolean required,
-                            Set<ValidationCsvDTO> validations,
+                            Collection<ValidationCsvDTO> validations,
                             CsvConsumer<String> consume) throws Exception {
         if (required) {
             parseNotNull(line, col, o, validations);
@@ -371,7 +371,7 @@ public class CsvParser extends CsvParserUtil {
     public void parseKodeNegara(int line,
                                 int column,
                                 Object o,
-                                Set<ValidationCsvDTO> validations,
+                                Collection<ValidationCsvDTO> validations,
                                 boolean ln,
                                 Consumer<String> consume) {
         String val = o.toString().toUpperCase();
