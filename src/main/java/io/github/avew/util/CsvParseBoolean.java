@@ -13,14 +13,14 @@ public class CsvParseBoolean {
     private static final List<String> BOOL_FALSE = List.of(
             "false", "f", "n", "no", "tidak", "off");
 
-    public ValidationCsvDTO execute(int line, int column, Object value) {
+    public ValidationCsvDTO execute(int line, int column,String columnName, Object value) {
 
         ValidationCsvDTO message = new ValidationCsvDTO();
 
         if (StringUtils.isEmpty(value.toString())) {
             message.setLine(line);
             message.setError(true);
-            message.setMessage(CsvErrorMessage.isBoolean(value, line, column));
+            message.setMessage(CsvErrorMessage.isBoolean(value, line, column,columnName));
         }
 
 

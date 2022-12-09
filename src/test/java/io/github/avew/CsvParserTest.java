@@ -43,10 +43,10 @@ public class CsvParserTest extends CsvReader<CsvUserValueDTO> {
     public CsvResultReader<CsvUserValueDTO> read(InputStream is) {
         CsvParseUser csvParseUser = new CsvParseUser();
         return read(is, HEADER, (line, columns, validations, value) -> {
-            csvParseUser.parseUsername(line, 0, columns[0], validations, value);
-            csvParseUser.parseEmail(line, 1, columns[1], true, validations, value::setEmail);
-            csvParseUser.parseFirstName(line, 2, columns[2], validations, value);
-            csvParseUser.parseLastName(line, 3, columns[3], validations, value);
+            csvParseUser.parseUsername(line, 0, HEADER[0], columns[0], validations, value);
+            csvParseUser.parseEmail(line, 1, HEADER[1], columns[1], true, validations, value::setEmail);
+            csvParseUser.parseFirstName(line, 2, HEADER[2], columns[2], validations, value);
+            csvParseUser.parseLastName(line, 3, HEADER[3], columns[3], validations, value);
         });
     }
 }

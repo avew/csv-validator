@@ -6,34 +6,35 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 public class CsvParseDigits {
 
-	public ValidationCsvDTO execute(int line,
-									int column,
-									Object value,
-									boolean isRequired) {
-		ValidationCsvDTO message = new ValidationCsvDTO();
+    public ValidationCsvDTO execute(int line,
+                                    int column,
+                                    String columnName,
+                                    Object value,
+                                    boolean isRequired) {
+        ValidationCsvDTO message = new ValidationCsvDTO();
 
-		if (isRequired) {
-			ValidationCsvDTO notNull = new CsvParseNotNull().execute(line, column, value);
+        if (isRequired) {
+            ValidationCsvDTO notNull = new CsvParseNotNull().execute(line, column, columnName, value);
 
-			if (notNull.isError()) {
-				message.setError(true);
-				message.setLine(line);
-				message.setMessage(CsvErrorMessage.notNull(value, line, column));
-			}
-		}
+            if (notNull.isError()) {
+                message.setError(true);
+                message.setLine(line);
+                message.setMessage(CsvErrorMessage.notNull(value, line, column, columnName));
+            }
+        }
 
-		if (value != null) {
-			String valueString = value.toString().trim();
-			if (!valueString.isEmpty()) {
-				if (!NumberUtils.isDigits(valueString)) {
-					message.setError(true);
-					message.setLine(line);
-					message.setMessage(CsvErrorMessage.digitsInvalid(value, line, column));
-				}
-			}
-		}
+        if (value != null) {
+            String valueString = value.toString().trim();
+            if (!valueString.isEmpty()) {
+                if (!NumberUtils.isDigits(valueString)) {
+                    message.setError(true);
+                    message.setLine(line);
+                    message.setMessage(CsvErrorMessage.digitsInvalid(value, line, column, columnName));
+                }
+            }
+        }
 
-		return message;
-	}
+        return message;
+    }
 
 }

@@ -5,22 +5,22 @@ import io.github.avew.ValidationCsvDTO;
 
 public class CsvParseInteger {
 
-	public ValidationCsvDTO execute(int line, int column, Object value, boolean noZeroPrefix) {
+	public ValidationCsvDTO execute(int line, int column,String columnName, Object value, boolean noZeroPrefix) {
 
 		ValidationCsvDTO message = new ValidationCsvDTO();
 
-		ValidationCsvDTO notNull = new CsvParseNotNull().execute(line, column, value);
+		ValidationCsvDTO notNull = new CsvParseNotNull().execute(line, column,columnName, value);
 		if (notNull.isError()) {
 			message.setLine(line);
 			message.setError(true);
-			message.setMessage(CsvErrorMessage.notNull(value, line, column));
+			message.setMessage(CsvErrorMessage.notNull(value, line, column,columnName));
 		}
 
 		if (noZeroPrefix) {
 			if (value.toString().startsWith("0")) {
 				message.setLine(line);
 				message.setError(true);
-				message.setMessage(CsvErrorMessage.nonStartZero(value, line, column));
+				message.setMessage(CsvErrorMessage.nonStartZero(value, line, column,columnName));
 			}
 		}
 
@@ -32,7 +32,7 @@ public class CsvParseInteger {
 			} catch (final NumberFormatException e) {
 				message.setLine(line);
 				message.setError(true);
-				message.setMessage(CsvErrorMessage.isInteger(value, line, column));
+				message.setMessage(CsvErrorMessage.isInteger(value, line, column,columnName));
 			}
 		} else {
 			final String actualClassName = value.getClass().getName();
