@@ -21,10 +21,10 @@ public class CsvParserUtil {
 
     protected static final List<Integer> MONTH = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 
-    protected boolean hasErrorWithCode(String code, Collection<ValidationCsvDTO> validations) {
-        return validations.stream().anyMatch(e ->
-                e.getCode().equalsIgnoreCase(code) && e.isError());
-    }
+//    protected boolean hasErrorWithCode(String code, Collection<ValidationCsvDTO> validations) {
+//        return validations.stream().anyMatch(e ->
+//                e.getCode().equalsIgnoreCase(code) && e.isError());
+//    }
 
     protected ValidationCsvDTO parseNotNull(int line, int col, String columnName, Object val, Collection<ValidationCsvDTO> validations) {
         ValidationCsvDTO n = new CsvParseNotNull().execute(line, col, columnName, val);
