@@ -13,7 +13,7 @@ public class CsvUtil {
         ValidationCsvDTO csvValidation = new ValidationCsvDTO(1, false, "");
         if (headerValidate.length != defaultHeader.length) {
             csvValidation.setError(true);
-            csvValidation.setMessage("Jumlah kolom pada header tidak sama, mohon di cek dengan template default");
+            csvValidation.setMessage("The number of columns in the header is not the same, please check with the default template");
         } else {
             for (int i = 0; i < headerValidate.length; i++) {
                 if (defaultHeader[i] != null) {
@@ -21,7 +21,7 @@ public class CsvUtil {
                     header = header.trim().replaceAll(" +", " ");
                     if (!defaultHeader[i].equalsIgnoreCase(header)) {
                         csvValidation.setError(true);
-                        csvValidation.setMessage("Header Kolom ke " + (i + 1) + " seharusnya '" + defaultHeader[i] + "'");
+                        csvValidation.setMessage("Csv header column " + (i + 1) + " should be '" + defaultHeader[i] + "'");
                     }
                 }
             }

@@ -55,7 +55,7 @@ public abstract class CsvReader<T extends CsvValue> extends CsvUtil {
             List<T> values = new ArrayList<>();
 
             while ((lineContent = br.readLine()) != null) {
-                String[] x = lineContent.split(";", -1);
+                String[] x = lineContent.split(delimeter, -1);
                 int line = index.getAndIncrement();
 
                 T value = type.getDeclaredConstructor().newInstance();
