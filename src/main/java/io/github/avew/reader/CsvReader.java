@@ -23,6 +23,7 @@ public abstract class CsvReader<T extends CsvValue> extends CsvUtil {
     protected CsvResultReader<T> read(
             InputStream is,
             String[] typeHeader,
+            String delimeter,
             CsvValuesSerializer<T> serializer
     ) {
         CsvResultReader<T> result = new CsvResultReader<T>();
@@ -39,7 +40,7 @@ public abstract class CsvReader<T extends CsvValue> extends CsvUtil {
         BufferedReader br = new BufferedReader(new InputStreamReader(is, UTF_8));
 
         try {
-            String[] contentHeader = getHeader(br.readLine());
+            String[] contentHeader = getHeader(br.readLine(), delimeter);
             ValidationCsvDTO headerValidation = headerValidation(typeHeader, contentHeader);
 
             if (headerValidation.isError()) {

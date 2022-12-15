@@ -7,7 +7,7 @@
 
     <groupId>avew.github.io</groupId>
     <artifactId>csv-validator</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
     <packaging>jar</packaging>
     <description>Csv validator</description>
 
