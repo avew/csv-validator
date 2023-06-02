@@ -26,6 +26,16 @@ public abstract class CsvReader<T extends CsvValue> extends CsvUtil {
             String delimeter,
             CsvValuesSerializer<T> serializer
     ) {
+        return read(0, is, typeHeader, delimeter, serializer);
+    }
+
+    protected CsvResultReader<T> read(
+            int startAt,
+            InputStream is,
+            String[] typeHeader,
+            String delimeter,
+            CsvValuesSerializer<T> serializer
+    ) {
         CsvResultReader<T> result = new CsvResultReader<T>();
         Set<ValidationCsvDTO> validations = new HashSet<>();
 
@@ -50,10 +60,18 @@ public abstract class CsvReader<T extends CsvValue> extends CsvUtil {
                 return result;
             }
 
-            String lineContent;
-            AtomicInteger index = new AtomicInteger(1);
             List<T> values = new ArrayList<>();
+            String lineContent;
 
+            if (startAt == 0) {
+                startAt = 1;
+            } else {
+                log.info("SKIP LINE, CURRENT READ AT LINE={}", startAt);
+            }
+            AtomicInteger index = new AtomicInteger(startAt);
+            for (int x = 1; x < startAt; x++) {
+                br.readLine();
+            }
             while ((lineContent = br.readLine()) != null) {
                 String[] x = lineContent.split(delimeter, -1);
                 int line = index.getAndIncrement();
@@ -72,7 +90,6 @@ public abstract class CsvReader<T extends CsvValue> extends CsvUtil {
                 }
 
                 try {
-                    // all column, bukan kyk di emet external yang ngelakuin iterasi per-kolom
                     serializer.apply(value.getLine(), x, validations, value);
                     values.add(value);
                 } catch (Exception ex) {

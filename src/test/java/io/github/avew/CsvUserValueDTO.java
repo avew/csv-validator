@@ -21,6 +21,7 @@ public class CsvUserValueDTO extends CsvValue {
                 ", email='" + email + '\'' +
                 ", firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +
+                ", line='" + getLine() + '\'' +
                 '}';
     }
 }
