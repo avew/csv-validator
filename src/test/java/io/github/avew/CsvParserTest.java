@@ -31,12 +31,12 @@ public class CsvParserTest extends CsvReader<CsvUserValueDTO> {
     public void testReadFailed() {
         InputStream is = this.getClass().getResourceAsStream("/csv/user-failed.csv");
         CsvResultReader<CsvUserValueDTO> read = read(is);
-        Assert.assertTrue(read.isError());
         if (read.isError()) {
             read.getValidations().forEach(validationCsvDTO -> {
                 System.out.println(validationCsvDTO.toString());
             });
         }
+        Assert.assertTrue(read.isError());
     }
 
     @Override
