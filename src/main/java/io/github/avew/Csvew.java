@@ -3,14 +3,14 @@ package io.github.avew;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-public class CsvUtil {
+public class Csvew {
 
     public String[] getHeader(String headerCsv, String delimeter) {
         return headerCsv.split(delimeter);
     }
 
-    public ValidationCsvDTO headerValidation(String[] defaultHeader, String[] headerValidate) {
-        ValidationCsvDTO csvValidation = new ValidationCsvDTO(1, false, "");
+    public CsvewValidationDTO headerValidation(String[] defaultHeader, String[] headerValidate) {
+        CsvewValidationDTO csvValidation = new CsvewValidationDTO(1, false, "");
         if (headerValidate.length != defaultHeader.length) {
             csvValidation.setError(true);
             csvValidation.setMessage("The number of columns in the header is not the same, please check with the default template");

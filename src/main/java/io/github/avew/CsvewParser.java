@@ -1,7 +1,7 @@
 package io.github.avew;
 
 
-import io.github.avew.util.CsvParserUtil;
+import io.github.avew.util.CsvewParserUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 
@@ -14,15 +14,15 @@ import java.util.*;
 import java.util.function.Consumer;
 
 
-public class CsvParser extends CsvParserUtil {
+public class CsvewParser extends CsvewParserUtil {
 
 
     public void parseNotNull(int line,
                              int col,
                              String columnName,
                              Object o,
-                             Collection<ValidationCsvDTO> validations,
-                             CsvConsumer<String> consume) throws Exception {
+                             Collection<CsvewValidationDTO> validations,
+                             CsvewConsumer<String> consume) throws Exception {
         parseNotNull(line, col, columnName, o, validations);
         consume.accept(o.toString());
     }
@@ -32,8 +32,8 @@ public class CsvParser extends CsvParserUtil {
                             String columnName,
                             Object o,
                             boolean required,
-                            Collection<ValidationCsvDTO> validations,
-                            CsvConsumer<String> consume) throws Exception {
+                            Collection<CsvewValidationDTO> validations,
+                            CsvewConsumer<String> consume) throws Exception {
         if (required) {
             parseNotNull(line, col, columnName, o, validations);
             consume.accept(o.toString());
@@ -54,9 +54,9 @@ public class CsvParser extends CsvParserUtil {
                              String columnName,
                              Object o,
                              boolean required,
-                             Collection<ValidationCsvDTO> validations,
-                             CsvConsumer<Boolean> consume) throws Exception {
-        ValidationCsvDTO v = parseBoolean(line, col, columnName, o, required, validations);
+                             Collection<CsvewValidationDTO> validations,
+                             CsvewConsumer<Boolean> consume) throws Exception {
+        CsvewValidationDTO v = parseBoolean(line, col, columnName, o, required, validations);
         if (v.isError()) return;
 
         String val = o.toString();
@@ -70,14 +70,14 @@ public class CsvParser extends CsvParserUtil {
                              String columnName,
                              Object o,
                              boolean required,
-                             Collection<ValidationCsvDTO> validations,
-                             CsvConsumer<Integer> consumeInt) throws Exception {
+                             Collection<CsvewValidationDTO> validations,
+                             CsvewConsumer<Integer> consumeInt) throws Exception {
         if (required) {
-            ValidationCsvDTO v = parseNotNull(line, col, columnName, o, validations);
+            CsvewValidationDTO v = parseNotNull(line, col, columnName, o, validations);
             if (v.isError()) return;
         }
 
-        ValidationCsvDTO v = parseInteger(line, col, columnName, o, false, validations);
+        CsvewValidationDTO v = parseInteger(line, col, columnName, o, false, validations);
         if (!v.isError()) consumeInt.accept(Integer.parseInt(o.toString()));
     }
 
@@ -87,9 +87,9 @@ public class CsvParser extends CsvParserUtil {
                                 Object o,
                                 boolean required,
                                 int min,
-                                Collection<ValidationCsvDTO> validations,
-                                CsvConsumer<Integer> consumeInt) throws Exception {
-        ValidationCsvDTO m = parseIntegerMin(line, col, columnName, o, required, min, validations);
+                                Collection<CsvewValidationDTO> validations,
+                                CsvewConsumer<Integer> consumeInt) throws Exception {
+        CsvewValidationDTO m = parseIntegerMin(line, col, columnName, o, required, min, validations);
         if (m.isError()) return;
 
         consumeInt.accept(Integer.parseInt(o.toString()));
@@ -100,9 +100,9 @@ public class CsvParser extends CsvParserUtil {
                                 String columnName,
                                 Object o,
                                 boolean allowZeroPrefix,
-                                Collection<ValidationCsvDTO> validations,
-                                CsvConsumer<BigDecimal> consumeBigDecimal) throws Exception {
-        ValidationCsvDTO v = parseBigDecimal(line, col, columnName, o, allowZeroPrefix, validations);
+                                Collection<CsvewValidationDTO> validations,
+                                CsvewConsumer<BigDecimal> consumeBigDecimal) throws Exception {
+        CsvewValidationDTO v = parseBigDecimal(line, col, columnName, o, allowZeroPrefix, validations);
         if (!v.isError())
             consumeBigDecimal.accept(new BigDecimal(o.toString()));
     }
@@ -113,9 +113,9 @@ public class CsvParser extends CsvParserUtil {
                                    Object o,
                                    BigDecimal min,
                                    boolean allowZeroPrefix,
-                                   Collection<ValidationCsvDTO> validations,
-                                   CsvConsumer<BigDecimal> consume) throws Exception {
-        ValidationCsvDTO v = parseBigDecimal(line, col, columnName, o, allowZeroPrefix, validations);
+                                   Collection<CsvewValidationDTO> validations,
+                                   CsvewConsumer<BigDecimal> consume) throws Exception {
+        CsvewValidationDTO v = parseBigDecimal(line, col, columnName, o, allowZeroPrefix, validations);
         if (v.isError()) return;
 
         BigDecimal value = new BigDecimal(o.toString());
@@ -124,7 +124,7 @@ public class CsvParser extends CsvParserUtil {
             return;
         }
 
-        validations.add(csvError(line, CsvErrorMessage.minInt(o, line, col, columnName, 0)));
+        validations.add(csvError(line, CsvewErrorMessage.minInt(o, line, col, columnName, 0)));
     }
 
     public void parseRange(int line,
@@ -132,8 +132,8 @@ public class CsvParser extends CsvParserUtil {
                            String columnName,
                            Object o,
                            int min, int max,
-                           Collection<ValidationCsvDTO> validations,
-                           CsvConsumer<String> consumeDigitRange) throws Exception {
+                           Collection<CsvewValidationDTO> validations,
+                           CsvewConsumer<String> consumeDigitRange) throws Exception {
         parseRange(line, col, columnName, o, min, max, validations);
         consumeDigitRange.accept(o.toString());
     }
@@ -144,22 +144,22 @@ public class CsvParser extends CsvParserUtil {
                               Object o,
                               Collection<String> constants,
                               boolean required,
-                              Collection<ValidationCsvDTO> validations,
-                              CsvConsumer<String> consume) throws Exception {
+                              Collection<CsvewValidationDTO> validations,
+                              CsvewConsumer<String> consume) throws Exception {
         if (required) {
-            ValidationCsvDTO v = parseNotNull(line, col, columnName, o, validations);
+            CsvewValidationDTO v = parseNotNull(line, col, columnName, o, validations);
             if (v.isError()) return;
         }
 
         String s = o.toString();
-        if (CsvUtil.anyMatch(constants, s::equalsIgnoreCase)) {
+        if (Csvew.anyMatch(constants, s::equalsIgnoreCase)) {
             // ambil nilai dari constant
-            String value = new ArrayList<>(constants).get(CsvUtil.indexOf(constants, s::equalsIgnoreCase));
+            String value = new ArrayList<>(constants).get(Csvew.indexOf(constants, s::equalsIgnoreCase));
             consume.accept(value);
         } else {
             if (required) {
                 validations.add(
-                        csvError(line, CsvErrorMessage.constValues(o, constants, line, col, columnName)));
+                        csvError(line, CsvewErrorMessage.constValues(o, constants, line, col, columnName)));
             }
         }
     }
@@ -169,9 +169,9 @@ public class CsvParser extends CsvParserUtil {
                            String columnName,
                            Object o,
                            boolean required,
-                           Collection<ValidationCsvDTO> validations,
-                           CsvConsumer<String> consumeDigits) throws Exception {
-        ValidationCsvDTO v = parseDigit(line, col, columnName, o, required, validations);
+                           Collection<CsvewValidationDTO> validations,
+                           CsvewConsumer<String> consumeDigits) throws Exception {
+        CsvewValidationDTO v = parseDigit(line, col, columnName, o, required, validations);
         if (!v.isError()) consumeDigits.accept(o.toString());
     }
 
@@ -181,8 +181,8 @@ public class CsvParser extends CsvParserUtil {
                                     Object o,
                                     int fixLength,
                                     boolean required,
-                                    Collection<ValidationCsvDTO> validations,
-                                    CsvConsumer<String> cosnumeDigitRange) throws Exception {
+                                    Collection<CsvewValidationDTO> validations,
+                                    CsvewConsumer<String> cosnumeDigitRange) throws Exception {
         parseLength(line, col, columnName, o, fixLength, validations);
         parseDigit(line, col, columnName, o, required, validations);
         cosnumeDigitRange.accept(o.toString());
@@ -192,8 +192,8 @@ public class CsvParser extends CsvParserUtil {
                            int col,
                            String columnName,
                            Object o,
-                           Collection<ValidationCsvDTO> validations,
-                           CsvConsumer<String> consumeNiku) throws Exception {
+                           Collection<CsvewValidationDTO> validations,
+                           CsvewConsumer<String> consumeNiku) throws Exception {
         parseLength(line, col, columnName, o, 6, validations);
         parseDigit(line, col, columnName, o, true, validations);
         consumeNiku.accept(o.toString());
@@ -203,8 +203,8 @@ public class CsvParser extends CsvParserUtil {
                            int col,
                            String columnName,
                            Object o,
-                           Collection<ValidationCsvDTO> validations,
-                           CsvConsumer<Integer> consumeMasaPajak) throws Exception {
+                           Collection<CsvewValidationDTO> validations,
+                           CsvewConsumer<Integer> consumeMasaPajak) throws Exception {
         parseNotNull(line, col, columnName, o, validations);
         int month = parseMonth(line, col, columnName, o, validations);
         if (month > 0) consumeMasaPajak.accept(month);
@@ -214,10 +214,10 @@ public class CsvParser extends CsvParserUtil {
                           int col,
                           String columnName,
                           Object o,
-                          Collection<ValidationCsvDTO> validations,
-                          CsvConsumer<Integer> consumeTahunPajak) throws Exception {
+                          Collection<CsvewValidationDTO> validations,
+                          CsvewConsumer<Integer> consumeTahunPajak) throws Exception {
         parseLength(line, col, columnName, o, 4, validations);
-        ValidationCsvDTO v = parseDigit(line, col, columnName, o, true, validations);
+        CsvewValidationDTO v = parseDigit(line, col, columnName, o, true, validations);
 
         if (!v.isError())
             consumeTahunPajak.accept(Integer.valueOf(o.toString()));
@@ -230,11 +230,11 @@ public class CsvParser extends CsvParserUtil {
                           Object o,
                           String dateFormat,
                           boolean required,
-                          Collection<ValidationCsvDTO> validations,
-                          CsvConsumer<LocalDate> consumeDate) throws Exception {
+                          Collection<CsvewValidationDTO> validations,
+                          CsvewConsumer<LocalDate> consumeDate) throws Exception {
 
         if (required) {
-            ValidationCsvDTO v = parseNotNull(line, col, columnName, o, validations);
+            CsvewValidationDTO v = parseNotNull(line, col, columnName, o, validations);
             if (v.isError()) return;
         }
 
@@ -259,11 +259,11 @@ public class CsvParser extends CsvParserUtil {
                               Object o,
                               String dateTimeFormat,
                               boolean required,
-                              Collection<ValidationCsvDTO> validations,
-                              CsvConsumer<LocalDateTime> consumeDate) throws Exception {
+                              Collection<CsvewValidationDTO> validations,
+                              CsvewConsumer<LocalDateTime> consumeDate) throws Exception {
 
         if (required) {
-            ValidationCsvDTO v = parseNotNull(line, col, columnName, o, validations);
+            CsvewValidationDTO v = parseNotNull(line, col, columnName, o, validations);
             if (v.isError()) return;
         }
 
@@ -286,8 +286,8 @@ public class CsvParser extends CsvParserUtil {
                                 int col,
                                 String columnName,
                                 Object o,
-                                Collection<ValidationCsvDTO> validations,
-                                CsvConsumer<String> consumerKodeNegara) throws Exception {
+                                Collection<CsvewValidationDTO> validations,
+                                CsvewConsumer<String> consumerKodeNegara) throws Exception {
         parseNotNull(line, col, columnName, o, validations);
 
         String kodeNegara = o.toString().toUpperCase();
@@ -300,10 +300,10 @@ public class CsvParser extends CsvParserUtil {
                            String columnName,
                            Object o,
                            boolean required,
-                           Collection<ValidationCsvDTO> validations,
-                           CsvConsumer<String> consumeEmail) throws Exception {
+                           Collection<CsvewValidationDTO> validations,
+                           CsvewConsumer<String> consumeEmail) throws Exception {
         if (required) {
-            ValidationCsvDTO m = parseNotNull(line, col, columnName, o, validations);
+            CsvewValidationDTO m = parseNotNull(line, col, columnName, o, validations);
             if (m.isError()) return;
         }
 
@@ -311,9 +311,9 @@ public class CsvParser extends CsvParserUtil {
         boolean isBlank = StringUtils.isBlank(email);
         boolean isEmail = EmailValidator.getInstance().isValid(email);
 
-        ValidationCsvDTO message = csvError(
+        CsvewValidationDTO message = csvError(
                 line,
-                CsvErrorMessage.defaultMessage(email, line, col, columnName, "Invalid email format"));
+                CsvewErrorMessage.defaultMessage(email, line, col, columnName, "Invalid email format"));
 
         if (required && !isEmail) {
             validations.add(message);
@@ -329,10 +329,10 @@ public class CsvParser extends CsvParserUtil {
                             String columnName,
                             Object o,
                             boolean required,
-                            Collection<ValidationCsvDTO> validations,
-                            CsvConsumer<String> consumeGender) throws Exception {
+                            Collection<CsvewValidationDTO> validations,
+                            CsvewConsumer<String> consumeGender) throws Exception {
         if (required) {
-            ValidationCsvDTO m = parseNotNull(line, col, columnName, o, validations);
+            CsvewValidationDTO m = parseNotNull(line, col, columnName, o, validations);
             if (m.isError()) return;
         }
 
@@ -340,7 +340,7 @@ public class CsvParser extends CsvParserUtil {
         boolean isBlank = StringUtils.isBlank(gender);
         boolean isGender = gender.equalsIgnoreCase("M") || gender.equalsIgnoreCase("F");
 
-        ValidationCsvDTO m = csvError(line, col, columnName, o,
+        CsvewValidationDTO m = csvError(line, col, columnName, o,
                 "invalid, nilai seharusnya salah 1 dari M/F");
 
         if (required && !isGender)
@@ -355,8 +355,8 @@ public class CsvParser extends CsvParserUtil {
                               int column,
                               String columnName,
                               Object o,
-                              Collection<ValidationCsvDTO> validations,
-                              CsvConsumer<String> consume) throws Exception {
+                              Collection<CsvewValidationDTO> validations,
+                              CsvewConsumer<String> consume) throws Exception {
         parseNotNull(line, column, columnName, o, validations);
         String app = o.toString().toUpperCase();
         switch (app) {
@@ -366,7 +366,7 @@ public class CsvParser extends CsvParserUtil {
                 consume.accept(o.toString());
                 break;
             default:
-                ValidationCsvDTO m = csvError(line, column, columnName, o,
+                CsvewValidationDTO m = csvError(line, column, columnName, o,
                         "invalid, nilai seharusnya salah 1 dari PPh/PPN");
                 validations.add(m);
                 break;
@@ -377,11 +377,11 @@ public class CsvParser extends CsvParserUtil {
                          int column,
                          Object o,
                          String columnName,
-                         Collection<ValidationCsvDTO> validations,
+                         Collection<CsvewValidationDTO> validations,
                          Consumer<String> consume) {
         parseNotNull(line, column, columnName, o, validations);
         if (o.toString().length() < 6 || o.toString().length() > 6) {
-            ValidationCsvDTO m = csvError(line, column, columnName, o,
+            CsvewValidationDTO m = csvError(line, column, columnName, o,
                     "invalid, nitku harus 6 karakter ");
             validations.add(m);
         } else {
@@ -393,7 +393,7 @@ public class CsvParser extends CsvParserUtil {
                                 int column,
                                 String columnName,
                                 Object o,
-                                Collection<ValidationCsvDTO> validations,
+                                Collection<CsvewValidationDTO> validations,
                                 boolean ln,
                                 Consumer<String> consume) {
         String val = o.toString().toUpperCase();
@@ -402,7 +402,7 @@ public class CsvParser extends CsvParserUtil {
             if (countryCodeByCode) {
                 consume.accept(val);
             } else {
-                validations.add(csvError(line, CsvErrorMessage.isKodeNegara(o, line, column,columnName)));
+                validations.add(csvError(line, CsvewErrorMessage.isKodeNegara(o, line, column,columnName)));
             }
         }
     }

@@ -1,26 +1,26 @@
 package io.github.avew.util;
 
-import io.github.avew.CsvErrorMessage;
-import io.github.avew.ValidationCsvDTO;
+import io.github.avew.CsvewErrorMessage;
+import io.github.avew.CsvewValidationDTO;
 
-public class CsvParseInteger {
+public class CsvewParseInteger {
 
-	public ValidationCsvDTO execute(int line, int column,String columnName, Object value, boolean noZeroPrefix) {
+	public CsvewValidationDTO execute(int line, int column, String columnName, Object value, boolean noZeroPrefix) {
 
-		ValidationCsvDTO message = new ValidationCsvDTO();
+		CsvewValidationDTO message = new CsvewValidationDTO();
 
-		ValidationCsvDTO notNull = new CsvParseNotNull().execute(line, column,columnName, value);
+		CsvewValidationDTO notNull = new CsvewParseNotNull().execute(line, column,columnName, value);
 		if (notNull.isError()) {
 			message.setLine(line);
 			message.setError(true);
-			message.setMessage(CsvErrorMessage.notNull(value, line, column,columnName));
+			message.setMessage(CsvewErrorMessage.notNull(value, line, column,columnName));
 		}
 
 		if (noZeroPrefix) {
 			if (value.toString().startsWith("0")) {
 				message.setLine(line);
 				message.setError(true);
-				message.setMessage(CsvErrorMessage.nonStartZero(value, line, column,columnName));
+				message.setMessage(CsvewErrorMessage.nonStartZero(value, line, column,columnName));
 			}
 		}
 
@@ -32,7 +32,7 @@ public class CsvParseInteger {
 			} catch (final NumberFormatException e) {
 				message.setLine(line);
 				message.setError(true);
-				message.setMessage(CsvErrorMessage.isInteger(value, line, column,columnName));
+				message.setMessage(CsvewErrorMessage.isInteger(value, line, column,columnName));
 			}
 		} else {
 			final String actualClassName = value.getClass().getName();

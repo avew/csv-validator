@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CsvUserValueDTO extends CsvValue {
+public class CsvewUserValueDTO extends CsvewValue {
 
     private String username;
     private String email;

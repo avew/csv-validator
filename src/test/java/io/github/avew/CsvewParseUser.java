@@ -7,14 +7,14 @@ import java.util.Collection;
 
 @Slf4j
 @RequiredArgsConstructor
-public class CsvParseUser extends CsvParser {
+public class CsvewParseUser extends CsvewParser {
 
     public void parseUsername(int line,
                               int column,
                               String columnName,
                               Object o,
-                              Collection<ValidationCsvDTO> validations,
-                              CsvUserValueDTO value) {
+                              Collection<CsvewValidationDTO> validations,
+                              CsvewUserValueDTO value) {
         parseNotNull(line, column,columnName, o, validations);
         value.setUsername(o.toString());
     }
@@ -24,8 +24,8 @@ public class CsvParseUser extends CsvParser {
                                int column,
                                String columnName,
                                Object o,
-                               Collection<ValidationCsvDTO> validations,
-                               CsvUserValueDTO value) {
+                               Collection<CsvewValidationDTO> validations,
+                               CsvewUserValueDTO value) {
         parseNotNull(line, column,columnName, o, validations);
         value.setFirstname(o.toString());
     }
@@ -34,8 +34,8 @@ public class CsvParseUser extends CsvParser {
                               int column,
                               String columnName,
                               Object o,
-                              Collection<ValidationCsvDTO> validations,
-                              CsvUserValueDTO value) {
+                              Collection<CsvewValidationDTO> validations,
+                              CsvewUserValueDTO value) {
         parseNotNull(line, column,columnName, o, validations);
         value.setLastname(o.toString());
     }

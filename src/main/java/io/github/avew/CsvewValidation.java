@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class CsvValidation {
+public class CsvewValidation {
 
     private int line;
 
@@ -17,7 +17,7 @@ public class CsvValidation {
     @Builder.Default
     private List<String> messages = new ArrayList<>();
 
-    public CsvValidation(int line, boolean error, List<String> messages) {
+    public CsvewValidation(int line, boolean error, List<String> messages) {
         this.line = line;
         this.error = error;
         this.messages = messages;

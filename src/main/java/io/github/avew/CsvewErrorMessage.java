@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("SpellCheckingInspection")
-public class CsvErrorMessage {
+public class CsvewErrorMessage {
 
     public static String masa(Object value, int line, int column, String columName) {
         return String.format("validation value: %s line: %d,column no: %d, column/field name: %s ,message: masa tidak sesuai, format seharusnya 1-12", value, line, column + 1, columName);

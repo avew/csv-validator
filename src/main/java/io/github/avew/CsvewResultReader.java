@@ -12,13 +12,13 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CsvResultReader<T extends CsvValue> {
+public class CsvewResultReader<T extends CsvewValue> {
 
     @Builder.Default
     private List<T> values = new ArrayList<>();
 
     @Builder.Default
-    private Collection<ValidationCsvDTO> validations = new ArrayList<>();
+    private Collection<CsvewValidationDTO> validations = new ArrayList<>();
 
     @Builder.Default
     private boolean error = false;

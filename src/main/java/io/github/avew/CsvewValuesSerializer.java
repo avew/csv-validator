@@ -3,11 +3,11 @@ package io.github.avew;
 import java.util.Collection;
 
 @FunctionalInterface
-public interface CsvValuesSerializer<T extends CsvValue> {
+public interface CsvewValuesSerializer<T extends CsvewValue> {
 
     void apply(int line,
                String[] columns,
-               Collection<ValidationCsvDTO> validations,
+               Collection<CsvewValidationDTO> validations,
                T value
     ) throws Exception;
 

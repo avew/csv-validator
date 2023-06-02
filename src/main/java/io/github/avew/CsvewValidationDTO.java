@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ValidationCsvDTO {
+public class CsvewValidationDTO {
 
 
     private int line;

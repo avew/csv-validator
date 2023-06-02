@@ -1,26 +1,26 @@
 package io.github.avew.util;
 
-import io.github.avew.CsvErrorMessage;
-import io.github.avew.ValidationCsvDTO;
+import io.github.avew.CsvewErrorMessage;
+import io.github.avew.CsvewValidationDTO;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
-public class CsvParseBoolean {
+public class CsvewParseBoolean {
 
     private static final List<String> BOOL_TRUE = List.of(
             "true", "t", "y", "yes", "ya", "on");
     private static final List<String> BOOL_FALSE = List.of(
             "false", "f", "n", "no", "tidak", "off");
 
-    public ValidationCsvDTO execute(int line, int column,String columnName, Object value) {
+    public CsvewValidationDTO execute(int line, int column, String columnName, Object value) {
 
-        ValidationCsvDTO message = new ValidationCsvDTO();
+        CsvewValidationDTO message = new CsvewValidationDTO();
 
         if (StringUtils.isEmpty(value.toString())) {
             message.setLine(line);
             message.setError(true);
-            message.setMessage(CsvErrorMessage.isBoolean(value, line, column,columnName));
+            message.setMessage(CsvewErrorMessage.isBoolean(value, line, column,columnName));
         }
 
 

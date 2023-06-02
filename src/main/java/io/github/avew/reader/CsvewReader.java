@@ -16,28 +16,20 @@ import java.util.stream.Collectors;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Slf4j
-public abstract class CsvReader<T extends CsvValue> extends CsvUtil {
+public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
 
-    public abstract CsvResultReader<T> read(InputStream is);
+    public abstract CsvewResultReader<T> process(int startAt, InputStream is);
 
-    protected CsvResultReader<T> read(
-            InputStream is,
-            String[] typeHeader,
-            String delimeter,
-            CsvValuesSerializer<T> serializer
-    ) {
-        return read(0, is, typeHeader, delimeter, serializer);
-    }
-
-    protected CsvResultReader<T> read(
+    @SuppressWarnings({"SameParameterValue", "SpellCheckingInspection"})
+    protected CsvewResultReader<T> read(
             int startAt,
             InputStream is,
             String[] typeHeader,
             String delimeter,
-            CsvValuesSerializer<T> serializer
+            CsvewValuesSerializer<T> serializer
     ) {
-        CsvResultReader<T> result = new CsvResultReader<T>();
-        Set<ValidationCsvDTO> validations = new HashSet<>();
+        CsvewResultReader<T> result = new CsvewResultReader<T>();
+        Set<CsvewValidationDTO> validations = new HashSet<>();
 
         final Class<T> type = getParameterType();
         boolean hasCtorWithNoParam = Arrays.stream(type.getDeclaredConstructors())
@@ -51,7 +43,7 @@ public abstract class CsvReader<T extends CsvValue> extends CsvUtil {
 
         try {
             String[] contentHeader = getHeader(br.readLine(), delimeter);
-            ValidationCsvDTO headerValidation = headerValidation(typeHeader, contentHeader);
+            CsvewValidationDTO headerValidation = headerValidation(typeHeader, contentHeader);
 
             if (headerValidation.isError()) {
                 validations.add(headerValidation);
@@ -63,10 +55,11 @@ public abstract class CsvReader<T extends CsvValue> extends CsvUtil {
             List<T> values = new ArrayList<>();
             String lineContent;
 
-            if (startAt == 0) {
+            if (startAt == 0 || startAt == 1) {
                 startAt = 1;
+                log.info("START LINE, AT={}", startAt);
             } else {
-                log.info("SKIP LINE, CURRENT READ AT LINE={}", startAt);
+                log.info("SKIP LINE, CURRENT READ AT={}", startAt);
             }
             AtomicInteger index = new AtomicInteger(startAt);
             for (int x = 1; x < startAt; x++) {
@@ -81,7 +74,7 @@ public abstract class CsvReader<T extends CsvValue> extends CsvUtil {
                 value.setRaw(List.of(x));
 
                 if (x.length > typeHeader.length) {
-                    validations.add(ValidationCsvDTO.builder()
+                    validations.add(CsvewValidationDTO.builder()
                             .line(value.getLine())
                             .error(true)
                             .message("the number of columns is not the same as the header")
@@ -94,7 +87,7 @@ public abstract class CsvReader<T extends CsvValue> extends CsvUtil {
                     values.add(value);
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                    validations.add(ValidationCsvDTO.builder()
+                    validations.add(CsvewValidationDTO.builder()
                             .line(value.getLine())
                             .error(true)
                             .message(ex.getMessage())
@@ -107,7 +100,7 @@ public abstract class CsvReader<T extends CsvValue> extends CsvUtil {
 
             if (validations.size() > 0) {
                 result.setError(true);
-                result.setValidations(validations.stream().sorted(Comparator.comparing(ValidationCsvDTO::getLine)).collect(Collectors.toList()));
+                result.setValidations(validations.stream().sorted(Comparator.comparing(CsvewValidationDTO::getLine)).collect(Collectors.toList()));
             }
         } catch (IOException | NoSuchMethodException | IllegalAccessException | InstantiationException |
                  InvocationTargetException ex) {

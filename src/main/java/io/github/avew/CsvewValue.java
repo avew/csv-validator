@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class CsvValue {
+public abstract class CsvewValue {
 
     private int line;
 
