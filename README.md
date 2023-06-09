@@ -1,8 +1,8 @@
 # Csv validator
-[https://jitpack.io/#avew/csv-validator](https://jitpack.io/#avew/csv-validator)
 
 [![](https://jitpack.io/v/avew/csv-validator.svg)](https://jitpack.io/#avew/csv-validator)
 
-# How To Use
+[![CircleCI](https://circleci.com/gh/avew/csv-validator.svg?style=shield)](https://circleci.com/gh/avew/csv-validator)
 
-See Unit Test
+# How To Use
+    See Unit Test :)
