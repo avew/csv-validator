@@ -57,10 +57,9 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
 
             if (startAt == 0 || startAt == 1) {
                 startAt = 1;
-                log.info("START LINE, AT={}", startAt);
-            } else {
-                log.info("SKIP LINE, CURRENT READ AT={}", startAt);
-            }
+                log.debug("START LINE={}", startAt);
+            } else log.debug("SKIP LINE CURRENT READ={}", startAt);
+
             AtomicInteger index = new AtomicInteger(startAt);
             for (int x = 1; x < startAt; x++) {
                 br.readLine();

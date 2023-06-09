@@ -1,6 +1,7 @@
 package io.github.avew;
 
 import io.github.avew.reader.CsvewReader;
+import lombok.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -8,7 +9,7 @@ import java.io.InputStream;
 
 public class CsvewParserTest extends CsvewReader<CsvewUserValueDTO> {
 
-    public static final String[] HEADER = {
+    private static final String[] HEADER = {
             "username",
             "email",
             "firstname",
@@ -18,7 +19,7 @@ public class CsvewParserTest extends CsvewReader<CsvewUserValueDTO> {
     @Test
     public void testReadSuccess() {
         InputStream is = this.getClass().getResourceAsStream("/csv/user.csv");
-        CsvewResultReader<CsvewUserValueDTO> read = process(8, is);
+        CsvewResultReader<CsvewUserValueDTO> read = process(0, is);
         Assert.assertFalse(read.isError());
         if (!read.isError()) {
             read.getValues().forEach(csvUserValueDTO -> {
@@ -41,14 +42,15 @@ public class CsvewParserTest extends CsvewReader<CsvewUserValueDTO> {
 
     @Override
     public CsvewResultReader<CsvewUserValueDTO> process(int startAt, InputStream is) {
-        CsvewParseUser csvParseUser = new CsvewParseUser();
+        CsvewParser csvParseUser = new CsvewParser();
         return read(startAt, is, HEADER, ";", (line, columns, validations, value) -> {
-            csvParseUser.parseUsername(line, 0, HEADER[0], columns[0], validations, value);
+            csvParseUser.parseString(line, 0, HEADER[0], columns[0], true, validations, value::setUsername);
             csvParseUser.parseEmail(line, 1, HEADER[1], columns[1], true, validations, value::setEmail);
-            csvParseUser.parseFirstName(line, 2, HEADER[2], columns[2], validations, value);
-            csvParseUser.parseLastName(line, 3, HEADER[3], columns[3], validations, value);
+            csvParseUser.parseString(line, 2, HEADER[2], columns[2], false, validations, value::setFirstname);
+            csvParseUser.parseString(line, 3, HEADER[3], columns[3], false, validations, value::setLastname);
         });
     }
+
 
 
 }

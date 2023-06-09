@@ -246,7 +246,7 @@ public class CsvewParser extends CsvewParserUtil {
         } catch (DateTimeParseException ex) {
             if (required) {
                 validations.add(csvError(line, col, columnName, o,
-                        "invalid, nilai harus berupa tgl dengan format %s",
+                        "the format doesn't match, value must be date with format %s",
                         dateFormat
                 ));
             }
@@ -275,7 +275,7 @@ public class CsvewParser extends CsvewParserUtil {
         } catch (DateTimeParseException ex) {
             if (required) {
                 validations.add(csvError(line, col, columnName, o,
-                        "invalid, nilai seharusnya berupa tgl, dengan format %s",
+                        "the format doesn't match, value must be date with format format %s",
                         dateTimeFormat
                 ));
             }
@@ -341,7 +341,7 @@ public class CsvewParser extends CsvewParserUtil {
         boolean isGender = gender.equalsIgnoreCase("M") || gender.equalsIgnoreCase("F");
 
         CsvewValidationDTO m = csvError(line, col, columnName, o,
-                "invalid, nilai seharusnya salah 1 dari M/F");
+                "the format doesn't match, value should be one of 1 of M/F");
 
         if (required && !isGender)
             validations.add(m);
@@ -367,7 +367,7 @@ public class CsvewParser extends CsvewParserUtil {
                 break;
             default:
                 CsvewValidationDTO m = csvError(line, column, columnName, o,
-                        "invalid, nilai seharusnya salah 1 dari PPh/PPN");
+                        "the format doesn't match, value should be one of 1 PPh/PPN");
                 validations.add(m);
                 break;
         }
@@ -382,7 +382,7 @@ public class CsvewParser extends CsvewParserUtil {
         parseNotNull(line, column, columnName, o, validations);
         if (o.toString().length() < 6 || o.toString().length() > 6) {
             CsvewValidationDTO m = csvError(line, column, columnName, o,
-                    "invalid, nitku harus 6 karakter ");
+                    "the format doesn't match, value must be 6 characters");
             validations.add(m);
         } else {
             consume.accept(o.toString());

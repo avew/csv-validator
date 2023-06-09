@@ -34,6 +34,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+
+        <maven.resource.version>3.3.1</maven.resource.version>
+        <maven.compiler.version>3.11.0</maven.compiler.version>
+        <maven.source.version>3.2.1</maven.source.version>
+        <maven.javadoc.version>3.4.1</maven.javadoc.version>
+        <maven-enforcer-plugin.version>3.3.0</maven-enforcer-plugin.version>
+
     </properties>
 
     <dependencies>
@@ -82,7 +89,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
+                <version>${maven.compiler.version}</version>
                 <configuration> <!-- Compile java 7 compatible bytecode -->
                     <source>11</source>
                     <target>11</target>
@@ -92,7 +99,7 @@
             <plugin>  <!-- Create sources.jar -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>${maven.source.version}</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -106,7 +113,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>${maven.javadoc.version}</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -116,6 +123,37 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${maven-enforcer-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>3.2.5</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.16.0</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.3.0</version>
+            </plugin>
+
         </plugins>
     </build>
 </project>
