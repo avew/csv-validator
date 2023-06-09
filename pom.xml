@@ -7,7 +7,7 @@
 
     <groupId>avew.github.io</groupId>
     <artifactId>csv-validator</artifactId>
-    <version>1.0.8</version>
+    <version>1.0.9</version>
     <packaging>jar</packaging>
     <description>Csv validator</description>
 
@@ -41,18 +41,21 @@
         <maven.javadoc.version>3.4.1</maven.javadoc.version>
         <maven-enforcer-plugin.version>3.3.0</maven-enforcer-plugin.version>
 
+        <lombok.version>1.18.28</lombok.version>
+        <junit.version>4.13.2</junit.version>
+        <logback.version>1.4.7</logback.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
+            <version>${lombok.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -74,12 +77,12 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.2.9</version>
+            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.9</version>
+            <version>${logback.version}</version>
         </dependency>
     </dependencies>
 
