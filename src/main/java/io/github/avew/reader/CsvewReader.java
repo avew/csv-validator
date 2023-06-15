@@ -22,6 +22,7 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
 
     @SuppressWarnings({"SameParameterValue", "SpellCheckingInspection"})
     protected CsvewResultReader<T> read(
+            boolean skipHeader,
             int startAt,
             InputStream is,
             String[] typeHeader,
@@ -42,15 +43,18 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
         BufferedReader br = new BufferedReader(new InputStreamReader(is, UTF_8));
 
         try {
-            String[] contentHeader = getHeader(br.readLine(), delimeter);
-            CsvewValidationDTO headerValidation = headerValidation(typeHeader, contentHeader);
+            if (!skipHeader) {
+                String[] contentHeader = getHeader(br.readLine(), delimeter);
+                CsvewValidationDTO headerValidation = headerValidation(typeHeader, contentHeader);
 
-            if (headerValidation.isError()) {
-                validations.add(headerValidation);
-                result.setValidations(validations);
-                result.setError(true);
-                return result;
+                if (headerValidation.isError()) {
+                    validations.add(headerValidation);
+                    result.setValidations(validations);
+                    result.setError(true);
+                    return result;
+                }
             }
+
 
             List<T> values = new ArrayList<>();
             String lineContent;
