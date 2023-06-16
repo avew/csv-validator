@@ -13,6 +13,7 @@ public class CsvewParseNotNull {
         if (StringUtils.isBlank(value.toString())) {
             message.setLine(line);
             message.setError(true);
+            message.setColumn(columnName);
             message.setMessage(CsvewErrorMessage.notNull(value, line, column, columnName));
         }
         return message;

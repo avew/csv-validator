@@ -37,6 +37,7 @@ public class CsvewParserUtil {
         if (required) validation = parseNotNull(line, col, columnName, o, validations);
 
         validation.setLine(line);
+        validation.setColumn(columnName);
 
         if (!validation.isError()) {
             String val = o.toString();
@@ -103,6 +104,7 @@ public class CsvewParserUtil {
 
 
         message.setLine(line);
+        message.setColumn(columnName);
         try {
             Long num = Long.valueOf(o.toString());
             if (num < min) {
@@ -127,6 +129,7 @@ public class CsvewParserUtil {
 
 
         message.setLine(line);
+        message.setColumn(columnName);
         try {
             Long num = Long.valueOf(o.toString());
             if (num < max) {
@@ -260,6 +263,7 @@ public class CsvewParserUtil {
         if (StringUtils.isBlank(licenses)) {
             CsvewValidationDTO message = new CsvewValidationDTO();
             message.setLine(1);
+            message.setColumn(columnName);
             message.setError(true);
             message.setMessage(CsvewErrorMessage.notNull(licenses, 1, 0, columnName));
             validations.add(message);

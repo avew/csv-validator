@@ -14,6 +14,8 @@ public class CsvewValidationDTO {
 
     private int line;
 
+    private String column;
+
     @Builder.Default
     private boolean error = false;
 
@@ -22,8 +24,9 @@ public class CsvewValidationDTO {
 
     @Override
     public String toString() {
-        return "ValidationCsvDTO{" +
+        return "{" +
                 "line=" + line +
+                "column=" + column +
                 ", error=" + error +
                 ", message='" + message + '\'' +
                 '}';

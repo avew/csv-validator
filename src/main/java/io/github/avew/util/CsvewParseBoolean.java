@@ -19,6 +19,7 @@ public class CsvewParseBoolean {
 
         if (StringUtils.isEmpty(value.toString())) {
             message.setLine(line);
+            message.setColumn(columnName);
             message.setError(true);
             message.setMessage(CsvewErrorMessage.isBoolean(value, line, column,columnName));
         }
