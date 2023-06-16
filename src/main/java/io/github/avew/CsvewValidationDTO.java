@@ -26,7 +26,7 @@ public class CsvewValidationDTO {
     public String toString() {
         return "{" +
                 "line=" + line +
-                "column=" + column +
+                ", column='" + column + '\'' +
                 ", error=" + error +
                 ", message='" + message + '\'' +
                 '}';
