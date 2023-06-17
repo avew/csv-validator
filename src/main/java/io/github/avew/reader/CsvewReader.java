@@ -65,9 +65,9 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
             } else log.debug("SKIP LINE CURRENT READ={}", startAt);
 
             AtomicInteger index = new AtomicInteger(startAt);
-            for (int x = 1; x < startAt; x++) {
-                br.readLine();
-            }
+            for (int x = 1; x < startAt; x++) br.readLine();
+            if (skipHeader) br.readLine();
+
             while ((lineContent = br.readLine()) != null) {
                 String[] x = lineContent.split(delimeter, -1);
                 int line = index.getAndIncrement();

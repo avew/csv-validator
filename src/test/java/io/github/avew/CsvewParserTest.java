@@ -19,7 +19,7 @@ public class CsvewParserTest extends CsvewReader<CsvewUserValueDTO> {
     @Test
     public void testReadSuccess() {
         InputStream is = this.getClass().getResourceAsStream("/csv/user.csv");
-        CsvewResultReader<CsvewUserValueDTO> read = process(0, is);
+        CsvewResultReader<CsvewUserValueDTO> read = process(2, is);
         Assert.assertFalse(read.isError());
         if (!read.isError()) {
             read.getValues().forEach(csvUserValueDTO -> {
@@ -43,7 +43,7 @@ public class CsvewParserTest extends CsvewReader<CsvewUserValueDTO> {
     @Override
     public CsvewResultReader<CsvewUserValueDTO> process(int startAt, InputStream is) {
         CsvewParser csvParseUser = new CsvewParser();
-        return read(false, startAt, is, HEADER, ";", (line, columns, validations, value) -> {
+        return read(true, startAt, is, HEADER, ";", (line, columns, validations, value) -> {
             csvParseUser.parseString(line, 0, HEADER[0], columns[0], true, validations, value::setUsername);
             csvParseUser.parseEmail(line, 1, HEADER[1], columns[1], true, validations, value::setEmail);
             csvParseUser.parseString(line, 2, HEADER[2], columns[2], false, validations, value::setFirstname);
