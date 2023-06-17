@@ -76,14 +76,17 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
                 value.setLine(line);
                 value.setRaw(List.of(x));
 
-                if (x.length > typeHeader.length) {
-                    validations.add(CsvewValidationDTO.builder()
-                            .line(value.getLine())
-                            .error(true)
-                            .message("the number of columns is not the same as the header")
-                            .build());
-                    continue;
+                if (skipHeader) {
+                    if (x.length > typeHeader.length) {
+                        validations.add(CsvewValidationDTO.builder()
+                                .line(value.getLine())
+                                .error(true)
+                                .message("the number of columns is not the same as the header")
+                                .build());
+                        continue;
+                    }
                 }
+
 
                 try {
                     serializer.apply(value.getLine(), x, validations, value);
