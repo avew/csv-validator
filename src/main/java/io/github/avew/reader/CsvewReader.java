@@ -42,7 +42,10 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(is, UTF_8));
 
+
         try {
+
+            /* dont validate header */
             if (!skipHeader) {
                 String[] contentHeader = getHeader(br.readLine(), delimeter);
                 CsvewValidationDTO headerValidation = headerValidation(typeHeader, contentHeader);
@@ -61,12 +64,13 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
 
             if (startAt == 0 || startAt == 1) {
                 startAt = 1;
-                log.debug("START LINE={}", startAt);
-            } else log.debug("SKIP LINE CURRENT READ={}", startAt);
+                log.debug("READ LINE {}", startAt);
+            } else {
+                log.debug("SKIP LINE CURRENT READ {}", startAt);
+            }
 
             AtomicInteger index = new AtomicInteger(startAt);
             for (int x = 1; x < startAt; x++) br.readLine();
-            if (skipHeader) br.readLine();
 
             while ((lineContent = br.readLine()) != null) {
                 String[] x = lineContent.split(delimeter, -1);
@@ -76,7 +80,7 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
                 value.setLine(line);
                 value.setRaw(List.of(x));
 
-                if (skipHeader) {
+                if (!skipHeader) {
                     if (x.length > typeHeader.length) {
                         validations.add(CsvewValidationDTO.builder()
                                 .line(value.getLine())
