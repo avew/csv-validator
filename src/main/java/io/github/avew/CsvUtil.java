@@ -1,6 +1,7 @@
 package io.github.avew;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public class CsvUtil {
@@ -29,14 +30,14 @@ public class CsvUtil {
 		return csvValidation;
 	}
 
-	public static  <T> boolean anyMatch(Iterable<T> container, Function<T, Boolean> matcher) {
+	public static  <T> boolean anyMatch(Iterable<T> container, Predicate<T> matcher) {
 		return indexOf(container, matcher) != -1;
 	}
 
-	public static <T> int indexOf(Iterable<T> container, Function<T, Boolean> matcher) {
+	public static <T> int indexOf(Iterable<T> container, Predicate<T> matcher) {
 		int i = 0;
 		for (T t : container) {
-			if (matcher.apply(t)) return i;
+			if (matcher.test(t)) return i;
 			i++;
 		}
 
