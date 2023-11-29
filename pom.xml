@@ -94,8 +94,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.compiler.version}</version>
                 <configuration> <!-- Compile java 7 compatible bytecode -->
-                    <source>11</source>
-                    <target>11</target>
+                    <source>21</source>
+                    <target>21</target>
                 </configuration>
             </plugin>
 
