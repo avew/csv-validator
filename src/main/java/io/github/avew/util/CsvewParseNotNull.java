@@ -6,15 +6,20 @@ import org.apache.commons.lang3.StringUtils;
 
 public class CsvewParseNotNull {
 
-    public CsvewValidationDTO execute(int line, int column, String columnName, Object value) {
+    public CsvewValidationDTO execute(int line,
+                                      int column,
+                                      String columnName,
+                                      Object value) {
 
         CsvewValidationDTO message = new CsvewValidationDTO();
 
         if (StringUtils.isBlank(value.toString())) {
             message.setLine(line);
             message.setError(true);
-            message.setColumn(columnName);
-            message.setMessage(CsvewErrorMessage.notNull(value, line, column, columnName));
+            message.setColumnName(columnName);
+            message.setColumn(column);
+            message.setValue(value);
+            message.setMessage(CsvewErrorMessage.notNull());
         }
         return message;
 

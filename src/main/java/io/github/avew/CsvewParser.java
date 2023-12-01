@@ -124,7 +124,7 @@ public class CsvewParser extends CsvewParserUtil {
             return;
         }
 
-        validations.add(csvError(line, CsvewErrorMessage.minInt(o, line, col, columnName, 0)));
+        validations.add(csvError(line, CsvewErrorMessage.minInt(0)));
     }
 
     public void parseRange(int line,
@@ -245,9 +245,7 @@ public class CsvewParser extends CsvewParserUtil {
             consumeDate.accept(date);
         } catch (DateTimeParseException ex) {
             if (required) {
-                validations.add(csvError(line, col, columnName, o,
-                        "the format doesn't match, value must be date with format %s",
-                        dateFormat
+                validations.add(csvError(line, col, columnName, String.format("the format doesn't match, value must be date with format %s", dateFormat)
                 ));
             }
         }
@@ -274,9 +272,8 @@ public class CsvewParser extends CsvewParserUtil {
             consumeDate.accept(date);
         } catch (DateTimeParseException ex) {
             if (required) {
-                validations.add(csvError(line, col, columnName, o,
-                        "the format doesn't match, value must be date with format format %s",
-                        dateTimeFormat
+                validations.add(csvError(line, col, columnName, String.format("the format doesn't match, value must be date with format format %s",
+                        dateTimeFormat)
                 ));
             }
         }
@@ -313,7 +310,10 @@ public class CsvewParser extends CsvewParserUtil {
 
         CsvewValidationDTO message = csvError(
                 line,
-                CsvewErrorMessage.defaultMessage(email, line, col, columnName, "Invalid email format"));
+                col,
+                columnName,
+                o,
+                "Invalid email format");
 
         if (required && !isEmail) {
             validations.add(message);
@@ -340,7 +340,7 @@ public class CsvewParser extends CsvewParserUtil {
         boolean isBlank = StringUtils.isBlank(gender);
         boolean isGender = gender.equalsIgnoreCase("M") || gender.equalsIgnoreCase("F");
 
-        CsvewValidationDTO m = csvError(line, col, columnName, o,
+        CsvewValidationDTO m = csvError(line, col, columnName,
                 "the format doesn't match, value should be one of 1 of M/F");
 
         if (required && !isGender)
@@ -366,7 +366,7 @@ public class CsvewParser extends CsvewParserUtil {
                 consume.accept(o.toString());
                 break;
             default:
-                CsvewValidationDTO m = csvError(line, column, columnName, o,
+                CsvewValidationDTO m = csvError(line, column, columnName,
                         "the format doesn't match, value should be one of 1 PPh/PPN");
                 validations.add(m);
                 break;
@@ -381,7 +381,7 @@ public class CsvewParser extends CsvewParserUtil {
                          Consumer<String> consume) {
         parseNotNull(line, column, columnName, o, validations);
         if (o.toString().length() < 6 || o.toString().length() > 6) {
-            CsvewValidationDTO m = csvError(line, column, columnName, o,
+            CsvewValidationDTO m = csvError(line, column, columnName,
                     "the format doesn't match, value must be 6 characters");
             validations.add(m);
         } else {
@@ -402,7 +402,7 @@ public class CsvewParser extends CsvewParserUtil {
             if (countryCodeByCode) {
                 consume.accept(val);
             } else {
-                validations.add(csvError(line, CsvewErrorMessage.isKodeNegara(o, line, column,columnName)));
+                validations.add(csvError(line, CsvewErrorMessage.isKodeNegara()));
             }
         }
     }

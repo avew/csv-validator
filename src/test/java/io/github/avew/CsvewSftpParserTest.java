@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.util.Collection;
 
 public class CsvewSftpParserTest extends CsvewReader<CsvSftpValue> {
 
@@ -23,20 +24,19 @@ public class CsvewSftpParserTest extends CsvewReader<CsvSftpValue> {
     @Test
     public void testReadSuccess() {
         InputStream is = this.getClass().getResourceAsStream("/csv/1.csv");
-        CsvewResultReader<CsvSftpValue> read = process(0, is);
+        CsvewResultReader<CsvSftpValue> read = process(is);
         System.out.println(read.getValues().toString());
     }
 
 
     @Override
-    public CsvewResultReader<CsvSftpValue> process(int startAt, InputStream is) {
+    public CsvewResultReader<CsvSftpValue> process(InputStream is) {
         CsvewParser csvParseUser = new CsvewParser();
-        return read(true,
-                startAt,
+        return read(
                 is,
                 HEADER,
                 ";",
-                (line, columns, validations, value) -> {
+                (int line, String[] columns, Collection<CsvewValidationDTO> validations, CsvSftpValue value) -> {
                     csvParseUser.parseString(line, 0, HEADER[0], columns[0], true, validations, value::setIdentityId);
                     csvParseUser.parseString(line, 1, HEADER[1], columns[1], true, validations, value::setIdentityType);
                     csvParseUser.parseString(line, 2, HEADER[2], columns[2], true, validations, value::setIdentityName);

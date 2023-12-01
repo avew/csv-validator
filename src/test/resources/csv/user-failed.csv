@@ -1,8 +1,8 @@
 username;email;firstname;lastname
-john;john;john;doe
+;john;john;doe
 john;john@m.com;john;doe
 john;john@m.com;john;doe
-john;john@m;john;doe
+john;john@m;;doe
 john;john@m.com;john;doe
 john;john@m.com;john;doe
 john;john@m.com;john;doe

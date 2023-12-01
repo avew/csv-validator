@@ -10,7 +10,7 @@ public class Csvew {
     }
 
     public CsvewValidationDTO headerValidation(String[] defaultHeader, String[] headerValidate) {
-        CsvewValidationDTO csvValidation = new CsvewValidationDTO(1,"HEADER", false, "");
+        CsvewValidationDTO csvValidation = new CsvewValidationDTO(1, 1, null, "HEADER", false, "");
         if (headerValidate.length != defaultHeader.length) {
             csvValidation.setError(true);
             csvValidation.setMessage("The number of columns in the header is not the same, please check with the default template");
