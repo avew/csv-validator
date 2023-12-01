@@ -18,11 +18,21 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Slf4j
 public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
 
-    public abstract CsvewResultReader<T> process(int startAt, InputStream is);
+
+    public abstract CsvewResultReader<T> process(InputStream is);
+
+
+    protected CsvewResultReader<T> read(
+            InputStream is,
+            String[] typeHeader,
+            String delimeter,
+            CsvewValuesSerializer<T> serializer
+    ) {
+        return read( 1, is, typeHeader, delimeter, serializer);
+    }
 
     @SuppressWarnings({"SameParameterValue", "SpellCheckingInspection"})
     protected CsvewResultReader<T> read(
-            boolean skipHeader,
             int startAt,
             InputStream is,
             String[] typeHeader,
@@ -46,7 +56,7 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
         try {
 
             /* dont validate header */
-            if (!skipHeader) {
+//            if (!skipHeader) {
                 String[] contentHeader = getHeader(br.readLine(), delimeter);
                 CsvewValidationDTO headerValidation = headerValidation(typeHeader, contentHeader);
 
@@ -56,18 +66,17 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
                     result.setError(true);
                     return result;
                 }
-            }
+//            }
 
 
             List<T> values = new ArrayList<>();
             String lineContent;
 
+
             if (startAt == 0 || startAt == 1) {
                 startAt = 1;
                 log.debug("READ LINE {}", startAt);
-            } else {
-                log.debug("SKIP LINE CURRENT READ {}", startAt);
-            }
+            } else log.debug("SKIP LINE CURRENT READ {}", startAt);
 
             AtomicInteger index = new AtomicInteger(startAt);
             for (int x = 1; x < startAt; x++) br.readLine();
@@ -80,7 +89,7 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
                 value.setLine(line);
                 value.setRaw(List.of(x));
 
-                if (!skipHeader) {
+//                if (!skipHeader) {
                     if (x.length > typeHeader.length) {
                         validations.add(CsvewValidationDTO.builder()
                                 .line(value.getLine())
@@ -89,7 +98,7 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
                                 .build());
                         continue;
                     }
-                }
+//                }
 
 
                 try {
@@ -107,6 +116,7 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
 
             result.setValues(values);
             result.setCount(values.size());
+
 
             if (validations.size() > 0) {
                 result.setError(true);

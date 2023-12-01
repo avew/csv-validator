@@ -2,9 +2,8 @@ package io.github.avew;
 
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -27,5 +26,17 @@ public class CsvewResultReader<T extends CsvewValue> {
     private int count = 0;
 
     private String message;
+
+
+    public Set<CsvewValidationDTO> errors() {
+        if (isError()) {
+            return
+                    this.getValidations()
+                            .stream().sorted(Comparator.comparing(CsvewValidationDTO::getLine))
+                            .sorted(Comparator.comparing(CsvewValidationDTO::getColumn))
+                            .collect(Collectors.toCollection(LinkedHashSet::new));
+        }
+        return null;
+    }
 
 }

@@ -26,7 +26,11 @@ public class CsvewParserUtil {
 //                e.getCode().equalsIgnoreCase(code) && e.isError());
 //    }
 
-    protected CsvewValidationDTO parseNotNull(int line, int col, String columnName, Object val, Collection<CsvewValidationDTO> validations) {
+    protected CsvewValidationDTO parseNotNull(int line,
+                                              int col,
+                                              String columnName,
+                                              Object val,
+                                              Collection<CsvewValidationDTO> validations) {
         CsvewValidationDTO n = new CsvewParseNotNull().execute(line, col, columnName, val);
         if (n.isError()) validations.add(n);
         return n;
@@ -37,7 +41,8 @@ public class CsvewParserUtil {
         if (required) validation = parseNotNull(line, col, columnName, o, validations);
 
         validation.setLine(line);
-        validation.setColumn(columnName);
+        validation.setColumn(col);
+        validation.setColumnName(columnName);
 
         if (!validation.isError()) {
             String val = o.toString();
@@ -58,8 +63,8 @@ public class CsvewParserUtil {
         return validation;
     }
 
-    protected CsvewValidationDTO parseDigit(int line, int col, String columnName, Object val, boolean isRequired, Collection<CsvewValidationDTO> validations) {
-        CsvewValidationDTO n = new CsvewParseDigits().execute(line, col, columnName, val, isRequired);
+    protected CsvewValidationDTO parseDigit(int line, int col, String columnName, Object val, boolean required, Collection<CsvewValidationDTO> validations) {
+        CsvewValidationDTO n = new CsvewParseDigits().execute(line, col, columnName, val, required);
         if (n.isError()) validations.add(n);
         return n;
     }
@@ -83,7 +88,7 @@ public class CsvewParserUtil {
 
         int value = Integer.parseInt(o.toString());
         if (value < min) {
-            m = csvError(line, col, columnName, o, CsvewErrorMessage.minInt(o, line, col, columnName, min));
+            m.setMessage(CsvewErrorMessage.minInt(value));
             validations.add(m);
         }
         return m;
@@ -104,16 +109,17 @@ public class CsvewParserUtil {
 
 
         message.setLine(line);
-        message.setColumn(columnName);
+        message.setColumn(col);
+        message.setColumnName(columnName);
         try {
             Long num = Long.valueOf(o.toString());
             if (num < min) {
                 message.setError(true);
-                message.setMessage(CsvewErrorMessage.minInt(o, line, col, columnName, min));
+                message.setMessage(CsvewErrorMessage.minInt(min));
             }
         } catch (NumberFormatException e) {
             message.setError(true);
-            message.setMessage(CsvewErrorMessage.isInteger(o, line, col, columnName));
+            message.setMessage(CsvewErrorMessage.isInteger());
         }
 
         if (message.isError() && addToValidations) validations.add(message);
@@ -129,16 +135,17 @@ public class CsvewParserUtil {
 
 
         message.setLine(line);
-        message.setColumn(columnName);
+        message.setColumn(col);
+        message.setColumnName(columnName);
         try {
             Long num = Long.valueOf(o.toString());
             if (num < max) {
                 message.setError(true);
-                message.setMessage(CsvewErrorMessage.maxInt(o, line, col, columnName, max));
+                message.setMessage(CsvewErrorMessage.maxInt(max));
             }
         } catch (NumberFormatException e) {
             message.setError(true);
-            message.setMessage(CsvewErrorMessage.isInteger(o, line, col, columnName));
+            message.setMessage(CsvewErrorMessage.isInteger());
         }
 
         if (message.isError() && addToValidations) validations.add(message);
@@ -153,9 +160,8 @@ public class CsvewParserUtil {
         CsvewValidationDTO maxValidation = parseRangeMax(line, col, columnName, o, maximum, false, validations);
 
         if (minValidation.isError() || maxValidation.isError()) {
-            return csvError(line, col, columnName, o,
-                    "invalid, nilai seharusnya antara %s sampai dengan %s",
-                    minimum, maximum);
+            return csvError(line, col, columnName, String.format("invalid, the value should be between %s to %s",
+                    minimum, maximum));
         }
 
         return csvError(line, null);
@@ -169,14 +175,26 @@ public class CsvewParserUtil {
                 .build();
     }
 
-    protected CsvewValidationDTO csvError(int line, int col, String columnName, Object value, String message, Object... args) {
+    protected CsvewValidationDTO csvError(int line, int col, String columnName, String message) {
         return CsvewValidationDTO.builder()
                 .error(true)
                 .line(line)
-                .message(CsvewErrorMessage.
-                        defaultMessage(value, line, col, columnName, message, args))
+                .message(message)
+                .column(col)
+                .columnName(columnName)
                 .build();
     }
+    protected CsvewValidationDTO csvError(int line, int col, String columnName,Object value, String message) {
+        return CsvewValidationDTO.builder()
+                .error(true)
+                .line(line)
+                .message(message)
+                .column(col)
+                .columnName(columnName)
+                .value(value)
+                .build();
+    }
+
 
 //    public Types.Identity parseIdType(int line, int col,String columnName, Object o, Collection<ValidationCsvDTO> validations) {
 //        return parseIdType(line, col, o, validations, "NPWP/NIK/TIN");
@@ -251,7 +269,7 @@ public class CsvewParserUtil {
             if (!MONTH.contains(v)) {
                 CsvewValidationDTO validateMonthResult = CsvewValidationDTO.builder()
                         .line(line)
-                        .message(CsvewErrorMessage.isInteger(v, line, column, columnName))
+                        .message(CsvewErrorMessage.isInteger())
                         .build();
                 validations.add(validateMonthResult);
             } else return v;
@@ -263,9 +281,9 @@ public class CsvewParserUtil {
         if (StringUtils.isBlank(licenses)) {
             CsvewValidationDTO message = new CsvewValidationDTO();
             message.setLine(1);
-            message.setColumn(columnName);
+            message.setColumnName(columnName);
             message.setError(true);
-            message.setMessage(CsvewErrorMessage.notNull(licenses, 1, 0, columnName));
+            message.setMessage(CsvewErrorMessage.notNull());
             validations.add(message);
         } else {
             String[] licenseSplit = licenses.split(Pattern.quote("|"));

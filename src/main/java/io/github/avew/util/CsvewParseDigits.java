@@ -19,8 +19,9 @@ public class CsvewParseDigits {
             if (notNull.isError()) {
                 message.setError(true);
                 message.setLine(line);
-                message.setColumn(columnName);
-                message.setMessage(CsvewErrorMessage.notNull(value, line, column, columnName));
+                message.setColumn(column);
+                message.setColumnName(columnName);
+                message.setMessage(CsvewErrorMessage.notNull());
             }
         }
 
@@ -30,8 +31,9 @@ public class CsvewParseDigits {
                 if (!NumberUtils.isDigits(valueString)) {
                     message.setError(true);
                     message.setLine(line);
-                    message.setColumn(columnName);
-                    message.setMessage(CsvewErrorMessage.digitsInvalid(value, line, column, columnName));
+                    message.setColumn(column);
+                    message.setColumnName(columnName);
+                    message.setMessage(CsvewErrorMessage.digitsInvalid());
                 }
             }
         }

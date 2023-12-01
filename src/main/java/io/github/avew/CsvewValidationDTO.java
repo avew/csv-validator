@@ -13,8 +13,10 @@ public class CsvewValidationDTO {
 
 
     private int line;
+    private int column;
+    private Object value;
 
-    private String column;
+    private String columnName;
 
     @Builder.Default
     private boolean error = false;
@@ -26,8 +28,9 @@ public class CsvewValidationDTO {
     public String toString() {
         return "{" +
                 "line=" + line +
-                ", column='" + column + '\'' +
-                ", error=" + error +
+                ", column_number='" + column + '\'' +
+                ", column_name='" + columnName + '\'' +
+                ", column_value='" + value + '\'' +
                 ", message='" + message + '\'' +
                 '}';
     }

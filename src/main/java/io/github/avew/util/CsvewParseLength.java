@@ -13,8 +13,9 @@ public class CsvewParseLength {
         if (valueString.length() != length) {
             message.setError(true);
             message.setLine(line);
-            message.setColumn(columnName);
-            message.setMessage(CsvewErrorMessage.length(value, line, column, columnName, length));
+            message.setColumn(column);
+            message.setColumnName(columnName);
+            message.setMessage(CsvewErrorMessage.length(length));
         }
 
         return message;
