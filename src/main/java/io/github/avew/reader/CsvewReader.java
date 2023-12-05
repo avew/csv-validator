@@ -18,9 +18,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Slf4j
 public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
 
-
-    public abstract CsvewResultReader<T> process(InputStream is);
-
+    public abstract CsvewResultReader<T> process(int start, InputStream is);
 
     protected CsvewResultReader<T> read(
             InputStream is,
@@ -28,7 +26,24 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
             String delimeter,
             CsvewValuesSerializer<T> serializer
     ) {
-        return read( 1, is, typeHeader, delimeter, serializer);
+        return read(1, is, typeHeader, delimeter, serializer);
+    }
+
+    protected CsvewResultReader<T> read(
+            InputStream is,
+            String[] typeHeader,
+            CsvewValuesSerializer<T> serializer
+    ) {
+        return read(1, is, typeHeader, ";", serializer);
+    }
+
+    protected CsvewResultReader<T> read(
+            int startAt,
+            InputStream is,
+            String[] typeHeader,
+            CsvewValuesSerializer<T> serializer
+    ) {
+        return read(startAt, is, typeHeader, ";", serializer);
     }
 
     @SuppressWarnings({"SameParameterValue", "SpellCheckingInspection"})
@@ -57,15 +72,15 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
 
             /* dont validate header */
 //            if (!skipHeader) {
-                String[] contentHeader = getHeader(br.readLine(), delimeter);
-                CsvewValidationDTO headerValidation = headerValidation(typeHeader, contentHeader);
+            String[] contentHeader = getHeader(br.readLine(), delimeter);
+            CsvewValidationDTO headerValidation = headerValidation(typeHeader, contentHeader);
 
-                if (headerValidation.isError()) {
-                    validations.add(headerValidation);
-                    result.setValidations(validations);
-                    result.setError(true);
-                    return result;
-                }
+            if (headerValidation.isError()) {
+                validations.add(headerValidation);
+                result.setValidations(validations);
+                result.setError(true);
+                return result;
+            }
 //            }
 
 
@@ -90,14 +105,14 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
                 value.setRaw(List.of(x));
 
 //                if (!skipHeader) {
-                    if (x.length > typeHeader.length) {
-                        validations.add(CsvewValidationDTO.builder()
-                                .line(value.getLine())
-                                .error(true)
-                                .message("the number of columns is not the same as the header")
-                                .build());
-                        continue;
-                    }
+                if (x.length > typeHeader.length) {
+                    validations.add(CsvewValidationDTO.builder()
+                            .line(value.getLine())
+                            .error(true)
+                            .message("the number of columns is not the same as the header")
+                            .build());
+                    continue;
+                }
 //                }
 
 
@@ -105,7 +120,7 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
                     serializer.apply(value.getLine(), x, validations, value);
                     values.add(value);
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    log.error("error apply serializer parse csv {}", ex.getMessage());
                     validations.add(CsvewValidationDTO.builder()
                             .line(value.getLine())
                             .error(true)
@@ -118,13 +133,13 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
             result.setCount(values.size());
 
 
-            if (validations.size() > 0) {
+            if (!validations.isEmpty()) {
                 result.setError(true);
                 result.setValidations(validations.stream().sorted(Comparator.comparing(CsvewValidationDTO::getLine)).collect(Collectors.toList()));
             }
         } catch (IOException | NoSuchMethodException | IllegalAccessException | InstantiationException |
                  InvocationTargetException ex) {
-            ex.printStackTrace();
+            log.error("error parse csv {}", ex.getMessage());
         }
 
         return result;
