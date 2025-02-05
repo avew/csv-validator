@@ -145,6 +145,103 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
         return result;
     }
 
+    @SuppressWarnings({"SameParameterValue", "SpellCheckingInspection"})
+    protected CsvewResultReader<T> read(
+        int startAt,
+        InputStream is,
+        String[] typeHeader,
+        String delimeter,
+        CsvewValuesSerializer<T> serializer,
+        boolean skipHeader
+    ) {
+        CsvewResultReader<T> result = new CsvewResultReader<T>();
+        Set<CsvewValidationDTO> validations = new HashSet<>();
+
+        final Class<T> type = getParameterType();
+        boolean hasCtorWithNoParam = Arrays.stream(type.getDeclaredConstructors())
+            .anyMatch(e -> e.getParameterCount() == 0);
+
+        if (!hasCtorWithNoParam) {
+            throw new IllegalArgumentException("Unable to construct csv value (" + type.getCanonicalName() + "), require constructor with 0 param");
+        }
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(is, UTF_8));
+
+
+        try {
+
+            /* validate header */
+            if (!skipHeader) {
+                String[] contentHeader = getHeader(br.readLine(), delimeter);
+                CsvewValidationDTO headerValidation = headerValidation(typeHeader, contentHeader);
+
+                if (headerValidation.isError()) {
+                    validations.add(headerValidation);
+                    result.setValidations(validations);
+                    result.setError(true);
+                    return result;
+                }
+            }
+
+            List<T> values = new ArrayList<>();
+            String lineContent;
+
+
+            if (startAt == 0 || startAt == 1) {
+                startAt = 1;
+                log.debug("READ LINE {}", startAt);
+            } else log.debug("SKIP LINE CURRENT READ {}", startAt);
+
+            AtomicInteger index = new AtomicInteger(startAt);
+            for (int x = 1; x < startAt; x++) br.readLine();
+
+            while ((lineContent = br.readLine()) != null) {
+                String[] x = lineContent.split(delimeter, -1);
+                int line = index.getAndIncrement();
+
+                T value = type.getDeclaredConstructor().newInstance();
+                value.setLine(line);
+                value.setRaw(List.of(x));
+
+                if (!skipHeader) {
+                    if (x.length > typeHeader.length) {
+                        validations.add(CsvewValidationDTO.builder()
+                            .line(value.getLine())
+                            .error(true)
+                            .message("the number of columns is not the same as the header")
+                            .build());
+                        continue;
+                    }
+                }
+
+                try {
+                    serializer.apply(value.getLine(), x, validations, value);
+                    values.add(value);
+                } catch (Exception ex) {
+                    log.error("error apply serializer parse csv {}", ex.getMessage());
+                    validations.add(CsvewValidationDTO.builder()
+                        .line(value.getLine())
+                        .error(true)
+                        .message(ex.getMessage())
+                        .build());
+                }
+            }
+
+            result.setValues(values);
+            result.setCount(values.size());
+
+            if (!validations.isEmpty()) {
+                result.setError(true);
+                result.setValidations(validations.stream().sorted(Comparator.comparing(CsvewValidationDTO::getLine)).collect(Collectors.toList()));
+            }
+        } catch (IOException | NoSuchMethodException | IllegalAccessException | InstantiationException |
+                 InvocationTargetException ex) {
+            log.error("error parse csv {}", ex.getMessage());
+        }
+
+        return result;
+    }
+
     @SuppressWarnings("unchecked")
     private Class<T> getParameterType() {
         ParameterizedType param = (ParameterizedType) getClass().getGenericSuperclass();
