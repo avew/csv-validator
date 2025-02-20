@@ -73,7 +73,7 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
             /* dont validate header */
 //            if (!skipHeader) {
             String[] contentHeader = getHeader(br.readLine(), delimeter);
-            CsvewValidationDTO headerValidation = headerValidation(typeHeader, contentHeader);
+            CsvewValidationDTO headerValidation = headerValidation(typeHeader, contentHeader, delimeter);
 
             if (headerValidation.isError()) {
                 validations.add(headerValidation);
@@ -110,6 +110,7 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
                             .line(value.getLine())
                             .error(true)
                             .message("the number of columns is not the same as the header")
+                            .lineContent(lineContent)
                             .build());
                     continue;
                 }
@@ -117,14 +118,20 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
 
 
                 try {
+                    int currentValidationsSize = validations.size();
+
                     serializer.apply(value.getLine(), x, validations, value);
                     values.add(value);
+
+                    int updatedValidationsSize = validations.size();
+                    if (updatedValidationsSize > currentValidationsSize) modifyLineContent(line, lineContent, validations);
                 } catch (Exception ex) {
                     log.error("error apply serializer parse csv {}", ex.getMessage());
                     validations.add(CsvewValidationDTO.builder()
                             .line(value.getLine())
                             .error(true)
                             .message(ex.getMessage())
+                            .lineContent(lineContent)
                             .build());
                 }
             }
@@ -173,7 +180,7 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
             /* validate header */
             if (!skipHeader) {
                 String[] contentHeader = getHeader(br.readLine(), delimeter);
-                CsvewValidationDTO headerValidation = headerValidation(typeHeader, contentHeader);
+                CsvewValidationDTO headerValidation = headerValidation(typeHeader, contentHeader, delimeter);
 
                 if (headerValidation.isError()) {
                     validations.add(headerValidation);
@@ -209,20 +216,27 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
                             .line(value.getLine())
                             .error(true)
                             .message("the number of columns is not the same as the header")
+                            .lineContent(lineContent)
                             .build());
                         continue;
                     }
                 }
 
                 try {
+                    int currentValidationsSize = validations.size();
+
                     serializer.apply(value.getLine(), x, validations, value);
                     values.add(value);
+
+                    int updatedValidationsSize = validations.size();
+                    if (updatedValidationsSize > currentValidationsSize) modifyLineContent(line, lineContent, validations);
                 } catch (Exception ex) {
                     log.error("error apply serializer parse csv {}", ex.getMessage());
                     validations.add(CsvewValidationDTO.builder()
                         .line(value.getLine())
                         .error(true)
                         .message(ex.getMessage())
+                        .lineContent(lineContent)
                         .build());
                 }
             }
@@ -246,6 +260,17 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
     private Class<T> getParameterType() {
         ParameterizedType param = (ParameterizedType) getClass().getGenericSuperclass();
         return (Class<T>) param.getActualTypeArguments()[0];
+    }
+
+    protected Set<CsvewValidationDTO> modifyLineContent(int line, String lineContent, Set<CsvewValidationDTO> validations) {
+        for (CsvewValidationDTO validation : validations) {
+            if (validation.getLine() == line) {
+                validation.setLineContent(lineContent);
+                return validations;
+            }
+        }
+
+        return validations;
     }
 
 }

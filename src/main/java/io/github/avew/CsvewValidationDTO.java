@@ -23,6 +23,7 @@ public class CsvewValidationDTO {
 
     private String message;
 
+    private String lineContent;
 
     @Override
     public String toString() {
@@ -32,6 +33,7 @@ public class CsvewValidationDTO {
                 ", column_name='" + columnName + '\'' +
                 ", column_value='" + value + '\'' +
                 ", message='" + message + '\'' +
+                ", lineContent='" + lineContent + '\'' +
                 '}';
     }
 }

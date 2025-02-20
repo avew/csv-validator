@@ -9,8 +9,8 @@ public class Csvew {
         return headerCsv.split(delimeter);
     }
 
-    public CsvewValidationDTO headerValidation(String[] defaultHeader, String[] headerValidate) {
-        CsvewValidationDTO csvValidation = new CsvewValidationDTO(1, 1, null, "HEADER", false, "");
+    public CsvewValidationDTO headerValidation(String[] defaultHeader, String[] headerValidate, String delimiter) {
+        CsvewValidationDTO csvValidation = new CsvewValidationDTO(1, 1, null, "HEADER", false, "", String.join(delimiter, headerValidate));
         if (headerValidate.length != defaultHeader.length) {
             csvValidation.setError(true);
             csvValidation.setMessage("The number of columns in the header is not the same, please check with the default template");
