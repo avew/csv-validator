@@ -13,7 +13,9 @@ public class CsvewValidationDTO {
 
 
     private int line;
+
     private int column;
+
     private Object value;
 
     private String columnName;
