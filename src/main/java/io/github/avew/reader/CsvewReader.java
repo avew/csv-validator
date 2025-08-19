@@ -273,4 +273,143 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
         return validations;
     }
 
+    protected CsvewResultReader<T> readWithQuotedValues(
+            int startAt,
+            InputStream is,
+            String[] typeHeader,
+            String delimiter,
+            CsvewValuesSerializer<T> serializer
+    ) {
+        CsvewResultReader<T> result = new CsvewResultReader<T>();
+        Set<CsvewValidationDTO> validations = new HashSet<>();
+
+        final Class<T> type = getParameterType();
+        boolean hasCtorWithNoParam = Arrays.stream(type.getDeclaredConstructors())
+                .anyMatch(e -> e.getParameterCount() == 0);
+
+        if (!hasCtorWithNoParam) {
+            throw new IllegalArgumentException("Unable to construct csv value (" + type.getCanonicalName() + "), require constructor with 0 param");
+        }
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(is, UTF_8));
+
+        try {
+            String[] contentHeader = parseCsvLine(br.readLine(), delimiter);
+            CsvewValidationDTO headerValidation = headerValidation(typeHeader, contentHeader, delimiter);
+
+            if (headerValidation.isError()) {
+                validations.add(headerValidation);
+                result.setValidations(validations);
+                result.setError(true);
+                return result;
+            }
+
+            List<T> values = new ArrayList<>();
+            String lineContent;
+
+            if (startAt == 0 || startAt == 1) {
+                startAt = 1;
+                log.debug("READ LINE {}", startAt);
+            } else log.debug("SKIP LINE CURRENT READ {}", startAt);
+
+            AtomicInteger index = new AtomicInteger(startAt);
+            for (int x = 1; x < startAt; x++) br.readLine();
+
+            while ((lineContent = br.readLine()) != null) {
+                String[] x = parseCsvLine(lineContent, delimiter);
+                int line = index.getAndIncrement();
+
+                T value = type.getDeclaredConstructor().newInstance();
+                value.setLine(line);
+                value.setRaw(List.of(x));
+
+                if (x.length > typeHeader.length) {
+                    validations.add(CsvewValidationDTO.builder()
+                            .line(value.getLine())
+                            .error(true)
+                            .message("the number of columns is not the same as the header")
+                            .lineContent(lineContent)
+                            .build());
+                    continue;
+                }
+
+                try {
+                    int currentValidationsSize = validations.size();
+
+                    serializer.apply(value.getLine(), x, validations, value);
+                    values.add(value);
+
+                    int updatedValidationsSize = validations.size();
+                    if (updatedValidationsSize > currentValidationsSize) modifyLineContent(line, lineContent, validations);
+                } catch (Exception ex) {
+                    log.error("error apply serializer parse csv {}", ex.getMessage());
+                    validations.add(CsvewValidationDTO.builder()
+                            .line(value.getLine())
+                            .error(true)
+                            .message(ex.getMessage())
+                            .lineContent(lineContent)
+                            .build());
+                }
+            }
+
+            result.setValues(values);
+            result.setCount(values.size());
+
+            if (!validations.isEmpty()) {
+                result.setError(true);
+                result.setValidations(validations.stream().sorted(Comparator.comparing(CsvewValidationDTO::getLine)).collect(Collectors.toList()));
+            }
+        } catch (IOException | NoSuchMethodException | IllegalAccessException | InstantiationException |
+                 InvocationTargetException ex) {
+            log.error("error parse csv {}", ex.getMessage());
+        }
+
+        return result;
+    }
+
+    private String[] parseCsvLine(String line, String delimiter) {
+        List<String> result = new ArrayList<>();
+        if (line == null || line.isEmpty()) {
+            return new String[0];
+        }
+
+        StringBuilder currentField = new StringBuilder();
+        boolean inQuotes = false;
+        boolean quotesStarted = false;
+
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+
+            if (c == '"') {
+                if (!quotesStarted) {
+                    inQuotes = true;
+                    quotesStarted = true;
+                } else if (i + 1 < line.length() && line.charAt(i + 1) == '"') {
+                    // Escaped quote
+                    currentField.append('"');
+                    i++; // Skip next quote
+                } else {
+                    inQuotes = false;
+                }
+            } else if (c == delimiter.charAt(0) && !inQuotes) {
+                // Check if this is the full delimiter
+                if (delimiter.length() == 1 || line.substring(i, Math.min(i + delimiter.length(), line.length())).equals(delimiter)) {
+                    result.add(currentField.toString());
+                    currentField = new StringBuilder();
+                    quotesStarted = false;
+                    if (delimiter.length() > 1) {
+                        i += delimiter.length() - 1; // Skip remaining delimiter characters
+                    }
+                } else {
+                    currentField.append(c);
+                }
+            } else {
+                currentField.append(c);
+            }
+        }
+
+        result.add(currentField.toString());
+        return result.toArray(new String[0]);
+    }
+
 }
