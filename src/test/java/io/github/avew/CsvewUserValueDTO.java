@@ -6,6 +6,8 @@ public class CsvewUserValueDTO extends CsvewValue {
     private String email;
     private String firstname;
     private String lastname;
+    private String ref1;
+    private String ref2;
 
     public CsvewUserValueDTO() {
     }
@@ -49,6 +51,22 @@ public class CsvewUserValueDTO extends CsvewValue {
         this.lastname = lastname;
     }
 
+    public String getRef1() {
+        return ref1;
+    }
+
+    public void setRef1(String ref1) {
+        this.ref1 = ref1;
+    }
+
+    public String getRef2() {
+        return ref2;
+    }
+
+    public void setRef2(String ref2) {
+        this.ref2 = ref2;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -56,6 +74,8 @@ public class CsvewUserValueDTO extends CsvewValue {
                 ", email='" + email + '\'' +
                 ", firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +
+                ", ref1='" + ref1 + '\'' +
+                ", ref2='" + ref2 + '\'' +
                 ", line='" + getLine() + '\'' +
                 '}';
     }
