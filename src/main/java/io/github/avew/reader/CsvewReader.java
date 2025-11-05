@@ -412,4 +412,158 @@ public abstract class CsvewReader<T extends CsvewValue> extends Csvew {
         return result.toArray(new String[0]);
     }
 
+    /**
+     * Read CSV without header validation.
+     * This method skips header validation and allows additional columns in CSV.
+     * Use this when your CSV file may have extra columns that should be ignored.
+     *
+     * @param startAt    Starting line number (1-based)
+     * @param is         Input stream of CSV file
+     * @param typeHeader Expected headers (used only for reference, not validated)
+     * @param delimiter  Column delimiter
+     * @param serializer Custom serializer to map CSV data to object
+     * @return Result containing parsed values and validations
+     */
+    @SuppressWarnings({"SameParameterValue", "SpellCheckingInspection"})
+    protected CsvewResultReader<T> readWithoutHeaderValidation(
+            int startAt,
+            InputStream is,
+            String[] typeHeader,
+            String delimiter,
+            CsvewValuesSerializer<T> serializer
+    ) {
+        CsvewResultReader<T> result = new CsvewResultReader<T>();
+        Set<CsvewValidationDTO> validations = new HashSet<>();
+
+        final Class<T> type = getParameterType();
+        boolean hasCtorWithNoParam = Arrays.stream(type.getDeclaredConstructors())
+                .anyMatch(e -> e.getParameterCount() == 0);
+
+        if (!hasCtorWithNoParam) {
+            throw new IllegalArgumentException("Unable to construct csv value (" + type.getCanonicalName() + "), require constructor with 0 param");
+        }
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(is, UTF_8));
+
+        try {
+            // Skip header line without validation
+            br.readLine();
+
+            List<T> values = new ArrayList<>();
+            String lineContent;
+
+            if (startAt == 0 || startAt == 1) {
+                startAt = 1;
+                log.debug("READ LINE {}", startAt);
+            } else log.debug("SKIP LINE CURRENT READ {}", startAt);
+
+            AtomicInteger index = new AtomicInteger(startAt);
+            for (int x = 1; x < startAt; x++) br.readLine();
+
+            while ((lineContent = br.readLine()) != null) {
+                String[] x = lineContent.split(delimiter, -1);
+                int line = index.getAndIncrement();
+
+                T value = type.getDeclaredConstructor().newInstance();
+                value.setLine(line);
+                value.setRaw(List.of(x));
+
+                // Skip column count validation - allow extra columns
+                // Only validate if there are LESS columns than expected
+                if (x.length < typeHeader.length) {
+                    validations.add(CsvewValidationDTO.builder()
+                            .line(value.getLine())
+                            .error(true)
+                            .message("the number of columns is less than expected (" + x.length + " < " + typeHeader.length + ")")
+                            .lineContent(lineContent)
+                            .build());
+                    continue;
+                }
+
+                try {
+                    int currentValidationsSize = validations.size();
+
+                    serializer.apply(value.getLine(), x, validations, value);
+                    values.add(value);
+
+                    int updatedValidationsSize = validations.size();
+                    if (updatedValidationsSize > currentValidationsSize) modifyLineContent(line, lineContent, validations);
+                } catch (Exception ex) {
+                    log.error("error apply serializer parse csv {}", ex.getMessage());
+                    validations.add(CsvewValidationDTO.builder()
+                            .line(value.getLine())
+                            .error(true)
+                            .message(ex.getMessage())
+                            .lineContent(lineContent)
+                            .build());
+                }
+            }
+
+            result.setValues(values);
+            result.setCount(values.size());
+
+            if (!validations.isEmpty()) {
+                result.setError(true);
+                result.setValidations(validations.stream().sorted(Comparator.comparing(CsvewValidationDTO::getLine)).collect(Collectors.toList()));
+            }
+        } catch (IOException | NoSuchMethodException | IllegalAccessException | InstantiationException |
+                 InvocationTargetException ex) {
+            log.error("error parse csv {}", ex.getMessage());
+        }
+
+        return result;
+    }
+
+    /**
+     * Read CSV without header validation - with default delimiter (semicolon).
+     *
+     * @param startAt    Starting line number (1-based)
+     * @param is         Input stream of CSV file
+     * @param typeHeader Expected headers (used only for reference, not validated)
+     * @param serializer Custom serializer to map CSV data to object
+     * @return Result containing parsed values and validations
+     */
+    protected CsvewResultReader<T> readWithoutHeaderValidation(
+            int startAt,
+            InputStream is,
+            String[] typeHeader,
+            CsvewValuesSerializer<T> serializer
+    ) {
+        return readWithoutHeaderValidation(startAt, is, typeHeader, ";", serializer);
+    }
+
+    /**
+     * Read CSV without header validation - starting from line 1 with custom delimiter.
+     *
+     * @param is         Input stream of CSV file
+     * @param typeHeader Expected headers (used only for reference, not validated)
+     * @param delimiter  Column delimiter
+     * @param serializer Custom serializer to map CSV data to object
+     * @return Result containing parsed values and validations
+     */
+    protected CsvewResultReader<T> readWithoutHeaderValidation(
+            InputStream is,
+            String[] typeHeader,
+            String delimiter,
+            CsvewValuesSerializer<T> serializer
+    ) {
+        return readWithoutHeaderValidation(1, is, typeHeader, delimiter, serializer);
+    }
+
+    /**
+     * Read CSV without header validation - starting from line 1 with default delimiter (semicolon).
+     *
+     * @param is         Input stream of CSV file
+     * @param typeHeader Expected headers (used only for reference, not validated)
+     * @param serializer Custom serializer to map CSV data to object
+     * @return Result containing parsed values and validations
+     */
+    protected CsvewResultReader<T> readWithoutHeaderValidation(
+            InputStream is,
+            String[] typeHeader,
+            CsvewValuesSerializer<T> serializer
+    ) {
+        return readWithoutHeaderValidation(1, is, typeHeader, ";", serializer);
+    }
+
 }
