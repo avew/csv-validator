@@ -160,4 +160,22 @@
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>nexus</id>
+            <url>https://repo.pajakku.com/repository/maven-public/</url>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>nexus</id>
+            <url>https://repo.pajakku.com/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus</id>
+            <url>https://repo.pajakku.com/repository/maven-snapshot/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>
